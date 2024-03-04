@@ -1,187 +1,244 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculate Y</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            padding: 20px;
-        }
-        .calculator {
-            max-width: 500px;
-            margin: 0 auto;
-            background-color: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .calculator h2 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .calculator label {
-            display: block;
-            margin-bottom: 5px;
-        }
-        .calculator input[type="text"], 
-        .calculator input[type="number"], 
-        .calculator input[type="button"] {
-            width: calc(100% - 20px); /* Adjusted width to account for padding */
-            padding: 10px;
-            margin-top: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            margin-left: auto;
-            margin-right: auto;
-            display: block; /* Ensure input fields are displayed as block elements */
-        }
-        .calculator input[type="button"] {
-            background-color: #007bff;
-            color: #fff;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .calculator input[type="button"]:hover {
-            background-color: #0056b3;
-        }
-        table {
-            width: 100%;
-            margin-top: 20px;
-            border-collapse: collapse;
-        }
-        table, th, td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: center;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minvayu Fablab</title>
+  <style>
+    body {
+      background-color: #eae2b7;
+      margin: 0;
+      padding: 0;
+      font-family: 'Times New Roman', Times, serif;
+    }
+
+    .navbar {
+      background-color: transparent;
+      overflow: hidden;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .navbar h1 {
+      margin-left: 20px;
+      color: black;
+      font-size: 24px;
+    }
+
+    .navbar a {
+      color: black;
+      text-decoration: none;
+      padding: 10px;
+      margin: 0 5px;
+      border-radius: 5px;
+      opacity: 0.8;
+    }
+
+    .container {
+      position: relative;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    .windmill-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 60vh; /* Adjust for better mobile display */
+    }
+
+    .windmill {
+      position: relative;
+    }
+
+    .line {
+      position: absolute;
+      width: 60vw; /* Adjust for better mobile display */
+      max-width: 300px; /* Ensure the line doesn't become too long */
+      height: 5px;
+      border-radius: 10px;
+      background-color: #333;
+      left: 50%;
+      transform: translateX(-50%);
+      top: 50px;
+      z-index: 1;
+    }
+
+    .mill {
+      position: absolute;
+      border-bottom: 65px solid #333;
+      border-right: 12px solid transparent;
+      border-left: 12px solid transparent;
+      width: 40px;
+      height: 0;
+      top: -18px;
+      left: -30px;
+      z-index: 2;
+    }
+
+    .mill:before {
+      position: absolute;
+      content: "";
+      border-bottom: 60px solid #ab3428;
+      border-right: 11px solid transparent;
+      border-left: 11px solid transparent;
+      width: 35px;
+      height: 0;
+      top: 6px;
+      left: -8.5px;
+    }
+
+    .mill:after {
+      position: absolute;
+      content: "";
+      background-color: #333;
+      width: 10px;
+      height: 3px;
+      border-radius: 5px;
+      left: -1px;
+      top: 12px;
+      box-shadow: 10px 20px #333, -5px 40px #333, 32px 3px #333, 35px 12px #333, 25px 40px #333, 27px 45px #333, 8px 47.5px #333, 5px 15px #333;
+    }
+
+    .door {
+      position: absolute;
+      background-color: #621708;
+      width: 12px;
+      height: 20px;
+      border-radius: 15px 15px 0 0;
+      border: 3px solid #333;
+      box-shadow: inset 1px 4px rgba(0, 0, 0, 0.2);
+      top: 27px;
+      left: -5px;
+      z-index: 3;
+    }
+
+    .door:before {
+      position: absolute;
+      content: "";
+      border-bottom: 40px solid #333;
+      border-right: 40px solid transparent;
+      border-left: 40px solid transparent;
+      height: 0;
+      width: 0;
+      top: -90px;
+      left: -35px;
+    }
+
+    .door:after {
+      position: absolute;
+      content: "";
+      border-bottom: 30px solid #2d728f;
+      border-right: 30px solid transparent;
+      border-left: 30px solid transparent;
+      height: 0;
+      width: 0;
+      top: -82px;
+      left: -25px;
+    }
+
+    .fan {
+      position: absolute;
+      background-color: #333;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      left: -3px;
+      top: -30px;
+      z-index: 4;
+      animation: spin 3s infinite linear;
+    }
+
+    .wingOne,
+    .wingTwo,
+    .wingThree,
+    .wingFour {
+      position: absolute;
+      width: 2px;
+      border: 2px solid #333;
+      height: 12px;
+      background-color: #e6e6ea;
+      border-radius: 6px;
+    }
+
+    .wingOne:before,
+    .wingTwo:before,
+    .wingThree:before,
+    .wingFour:before {
+      position: absolute;
+      content: "";
+      background-color: #3b8ea5;
+      box-shadow: inset -2px 0 #f5ee9e;
+      border: 2px solid #333;
+      width: 6px;
+      height: 26px;
+      top: 7px;
+      left: -5px;
+    }
+
+    .wingOne {
+      left: 3px;
+      top: 7px;
+    }
+
+    .wingTwo {
+      transform: rotate(90deg);
+      top: -3px;
+      left: -8px;
+    }
+
+    .wingThree {
+      transform: rotate(-90deg);
+      top: -3px;
+      left: 13px;
+    }
+
+    .wingFour {
+      transform: rotate(180deg);
+      top: -15px;
+      left: 3px;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="calculator">
-        <h2>Calculate Y</h2>
-        <label for="radius">Radius (r):</label>
-        <input type="number" id="radius" placeholder="Enter radius">
 
-        <label for="length">Length (l):</label>
-        <input type="number" id="length" placeholder="Enter length">
+<div class="navbar">
+  <h1>Minvayu Fablab</h1>
+  <a href="#home">Home</a>
+  <li><a href="https://minvayufablab.github.io/utility.html">Utility</a></li>
+  <a href="#about">About Us</a>
+</div>
 
-        <label for="actualDegree">Actual Degree:</label>
-        <input type="number" id="actualDegree" placeholder="Enter actual degree">
-
-        <label for="configY">Value of Y in config file:</label>
-        <input type="number" id="configY" placeholder="Enter value of Y in config file">
-
-        <input type="button" value="Calculate Required Value" onclick="calculate()">
+<div class="container">
+  <div class="windmill-container">
+    <div class="windmill">
+      <div class="line"></div>
+      <div class="mill"></div>
+      <div class="door"></div>
+      <div class="fan">
+        <div class="wingOne"></div>
+        <div class="wingTwo"></div>
+        <div class="wingThree"></div>
+        <div class="wingFour"></div>
+      </div>
     </div>
+  </div>
+</div>
 
-    <div>
-        <h2>Results</h2>
-        <table id="resultsTable">
-            <thead>
-                <tr>
-                    <th>Radius (r)</th>
-                    <th>Length (l)</th>
-                    <th>Calculated Angle (Y)</th>
-                    <th>Actual Degree</th>
-                    <th>Value of Y in config file</th>
-                    <th>Required Value of Y in Config</th>
-                </tr>
-            </thead>
-            <tbody id="resultsBody">
-            </tbody>
-        </table>
-        <button onclick="exportToExcel()">Export to Excel</button>
-    </div>
-
-    <script>
-        // Array to store calculation results
-        var calculations = [];
-
-        // Function to convert radians to degrees
-        function toDegrees(radians) {
-            return radians * (180 / Math.PI);
-        }
-
-        function calculate() {
-            var radius = parseFloat(document.getElementById('radius').value);
-            var length = parseFloat(document.getElementById('length').value);
-            var actualDegree = parseFloat(document.getElementById('actualDegree').value);
-            var configY = parseFloat(document.getElementById('configY').value);
-
-            if (isNaN(radius) || isNaN(length) || isNaN(actualDegree) || isNaN(configY)) {
-                alert('Please enter valid values for radius, length, actual degree, and config Y.');
-                return;
-            }
-            
-            // Calculate the expression
-            var value = 2 * Math.asin(length / (2 * radius));
-            
-            // Convert radians to degrees
-            var degrees = toDegrees(value).toFixed(2);
-
-            // Calculate the required value of Y in the config file
-            var requiredValue = configY / (degrees / actualDegree);
-
-            // Store the calculation result
-            var calculationResult = {
-                radius: radius,
-                length: length,
-                calculatedAngle: degrees,
-                actualDegree: actualDegree,
-                configY: configY,
-                requiredValue: requiredValue.toFixed(2)
-            };
-
-            calculations.push(calculationResult);
-
-            // Update the results table
-            updateTable();
-        }
-
-        // Function to update the results table
-        function updateTable() {
-            var tableBody = document.getElementById('resultsBody');
-            // Clear the table
-            tableBody.innerHTML = '';
-
-            // Loop through the calculations array and update the table
-            calculations.forEach(function(calculation) {
-                var newRow = tableBody.insertRow(-1);
-                var cell1 = newRow.insertCell(0);
-                var cell2 = newRow.insertCell(1);
-                var cell3 = newRow.insertCell(2);
-                var cell4 = newRow.insertCell(3);
-                var cell5 = newRow.insertCell(4);
-                var cell6 = newRow.insertCell(5);
-                cell1.textContent = calculation.radius;
-                cell2.textContent = calculation.length;
-                cell3.textContent = calculation.calculatedAngle;
-                cell4.textContent = calculation.actualDegree;
-                cell5.textContent = calculation.configY;
-                cell6.textContent = calculation.requiredValue;
-            });
-        }
-
-        // Function to export data to Excel
-        function exportToExcel() {
-            var table = document.getElementById('resultsTable');
-            var wb = XLSX.utils.table_to_book(table, {sheet:"Sheet1"});
-            var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
-
-            function s2ab(s) {
-                var buf = new ArrayBuffer(s.length);
-                var view = new Uint8Array(buf);
-                for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
-                return buf;
-            }
-
-            saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'results.xlsx');
-        }
-    </script>
 </body>
 </html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polar Printer Calibration Utility</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.0/FileSaver.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.0/xlsx.full.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+        .left-panel {
+            width: 200px;
+            background-color: #fff;
+            padding: 20px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        .left-panel:hover {
+            background-color: #eee;
+        }
+        .left-panel h3 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .left-panel ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .left-panel li {
+            margin-bottom: 10px;
+        }
+        .left-panel a {
+            color: #007bff;
+            text-decoration: none;
+            display: block;
+            padding: 10px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+            text-align: center;
+        }
+        .left-panel a:hover {
+            background-color: #0056b3;
+            color: #fff;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease-out;
+        }
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .input-group {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        label {
+            flex: 1;
+            text-align: center; /* Center align the labels */
+            margin-right: 10px;
+        }
+        input[type="number"], 
+        input[type="button"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        input[type="button"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            border: none;
+            border-radius: 5px;
+            padding: 10px;
+            width: 100%;
+        }
+        input[type="button"]:hover {
+            background-color: #0056b3;
+        }
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+            white-space: nowrap;
+        }
+        button {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="left-panel">
+        <h3>Minvayu Fablab</h3>
+        <ul>
+            <li><a href="https://minvayufablab.github.io/index.html">Home</a></li>
+            <li><a href="#">About Us</a></li>
+        </ul>
+    </div>
+    <div class="container">
+        <h1>Polar Printer Calibration Utility</h1>
+        <div class="input-group">
+            <label for="radius">Radius (r):</label>
+            <input type="number" id="radius" placeholder="Enter radius">
+        </div>
+
+        <div class="input-group">
+            <label for="length">Length (l):</label>
+            <input type="number" id="length" placeholder="Enter length">
+        </div>
+
+        <div class="input-group">
+            <label for="actualDegree">Actual Degree:</label>
+            <input type="number" id="actualDegree" placeholder="Enter actual degree">
+        </div>
+
+        <div class="input-group">
+            <label for="configY">Value of Y in config file:</label>
+            <input type="number" id="configY" placeholder="Enter value of Y in config file">
+        </div>
+
+        <input type="button" value="Calculate Required Value" onclick="calculate()">
+
+        <div class="table-container">
+            <h2>Results</h2>
+            <p>Number of Calculations: <span id="count">0</span></p>
+            <p>Average Required Value of Y: <span id="averageY">-</span></p>
+            <table id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>Radius (r)</th>
+                        <th>Length (l)</th>
+                        <th>Calculated Angle (Y)</th>
+                        <th>Actual Degree</th>
+                        <th>Value of Y in config file</th>
+                        <th>Required Value of Y in Config</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsBody">
+                </tbody>
+            </table>
+        </div>
+        <button onclick="exportToExcel()">Export to Excel</button>
+    </div>
+
+    <script>
+        var calculations = [];
+        var counter = 0;
+        var totalRequiredValue = 0;
+
+        function calculate() {
+            var radius = parseFloat(document.getElementById('radius').value);
+            var length = parseFloat(document.getElementById('length').value);
+            var actualDegree = parseFloat(document.getElementById('actualDegree').value);
+            var configY = parseFloat(document.getElementById('configY').value);
+
+            if (isNaN(radius) || isNaN(length) || isNaN(actualDegree) || isNaN(configY)) {
+                alert('Please enter valid values for radius, length, actual degree, and config Y.');
+                return;
+            }
+            
+            var value = 2 * Math.asin(length / (2 * radius));
+            var degrees = toDegrees(value).toFixed(2);
+            var requiredValue = configY / (degrees / actualDegree);
+
+            var calculationResult = {
+                radius: radius,
+                length: length,
+                calculatedAngle: degrees,
+                actualDegree: actualDegree,
+                configY: configY,
+                requiredValue: requiredValue.toFixed(2)
+            };
+
+            calculations.push(calculationResult);
+            counter++;
+            updateTable();
+
+            if (counter >= 10) {
+                optimizeY();
+            }
+        }
+
+        function updateTable() {
+            var tableBody = document.getElementById('resultsBody');
+            tableBody.innerHTML = '';
+            var sumRequiredValue = 0;
+
+            calculations.forEach(function(calculation) {
+                var newRow = tableBody.insertRow(-1);
+                var cell1 = newRow.insertCell(0);
+                var cell2 = newRow.insertCell(1);
+                var cell3 = newRow.insertCell(2);
+                var cell4 = newRow.insertCell(3);
+                var cell5 = newRow.insertCell(4);
+                var cell6 = newRow.insertCell(5);
+                cell1.textContent = calculation.radius;
+                cell2.textContent = calculation.length;
+                cell3.textContent = calculation.calculatedAngle;
+                cell4.textContent = calculation.actualDegree;
+                cell5.textContent = calculation.configY;
+                cell6.textContent = calculation.requiredValue;
+
+                sumRequiredValue += parseFloat(calculation.requiredValue);
+            });
+
+            var averageRequiredValue = sumRequiredValue / calculations.length;
+            document.getElementById('averageY').textContent = averageRequiredValue.toFixed(2);
+            document.getElementById('count').textContent = counter;
+        }
+
+        function optimizeY() {
+            // Calculate an optimized value for Y.config based on the average required value
+            var averageRequiredValue = totalRequiredValue / calculations.length;
+            alert("Optimized Value for Y.Config: " + averageRequiredValue.toFixed(2));
+        }
+
+        function exportToExcel() {
+            var table = document.getElementById('resultsTable');
+            var wb = XLSX.utils.table_to_book(table, {sheet:"Sheet1"});
+            var wbout = XLSX.write(wb, {bookType:'xlsx',  type: 'binary'});
+
+            function s2ab(s) {
+                var buf = new ArrayBuffer(s.length);
+                var view = new Uint8Array(buf);
+                for (var i=0; i<s.length; i++) view[i] = s.charCodeAt(i) & 0xFF;
+                return buf;
+            }
+
+            saveAs(new Blob([s2ab(wbout)],{type:"application/octet-stream"}), 'results.xlsx');
+        }
+
+        function toDegrees(radians) {
+            return radians * (180 / Math.PI);
+        }
+    </script>
+</body>
+</html>
