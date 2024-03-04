@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculate Y</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .calculator {
+      width: 300px;
+      background-color: #fff;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    .calculator h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .calculator label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    .calculator input[type="text"], 
+    .calculator input[type="number"], 
+    .calculator input[type="button"] {
+      width: calc(100% - 20px); /* Adjusted width to account for padding */
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-left: auto;
+      margin-right: auto;
+      display: block; /* Ensure input fields are displayed as block elements */
+    }
+    .calculator input[type="button"] {
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .calculator input[type="button"]:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <h2>Calculate Y</h2>
+    <label for="radius">Radius (r):</label>
+    <input type="number" id="radius" placeholder="Enter radius">
+
+    <label for="length">Length (l):</label>
+    <input type="number" id="length" placeholder="Enter length">
+
+    <input type="text" id="result" disabled>
+    <input type="button" value="Calculate" onclick="calculate()">
+  </div>
+
+  <script>
+    function calculate() {
+      var resultField = document.getElementById('result');
+      var radius = parseFloat(document.getElementById('radius').value);
+      var length = parseFloat(document.getElementById('length').value);
+
+      if (isNaN(radius) || isNaN(length)) {
+        alert('Please enter valid values for radius and length.');
+        return;
+      }
+      
+      // Calculate the expression
+      var value = 2 * Math.asin(radius / (2 * length));
+      
+      // Convert radians to degrees
+      var degrees = (value * (180 / Math.PI)).toFixed(2);
+
+      // Update the result field
+      resultField.value = degrees + ' degrees';
+    }
+  </script>
+</body>
+</html>
