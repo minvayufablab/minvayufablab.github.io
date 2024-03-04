@@ -14,7 +14,7 @@
       height: 100vh;
     }
     .calculator {
-      width: 300px;
+      width: 500px;
       background-color: #fff;
       border-radius: 10px;
       padding: 20px;
@@ -49,6 +49,16 @@
     .calculator input[type="button"]:hover {
       background-color: #0056b3;
     }
+    table {
+      width: 100%;
+      margin-top: 20px;
+      border-collapse: collapse;
+    }
+    table, th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -61,28 +71,128 @@
     <input type="number" id="length" placeholder="Enter length">
 
     <input type="text" id="result" disabled>
-    <input type="button" value="Calculate" onclick="calculate()">
+
+    <label for="actualDegree">Actual Degree:</label>
+    <input type="number" id="actualDegree" placeholder="Enter actual degree">
+
+    <label for="configY">Value of Y in config file:</label>
+    <input type="number" id="configY" placeholder="Enter value of Y in config file">
+
+    <input type="button" value="Calculate Required Value" onclick="calculate()">
+  </div>
+
+  <div>
+    <h2>Results</h2>
+    <table id="resultsTable">
+      <thead>
+        <tr>
+          <th>Radius (r)</th>
+          <th>Length (l)</th>
+          <th>Calculated Angle (Y)</th>
+          <th>Actual Degree</th>
+          <th>Value of Y in config file</th>
+          <th>Required Value of Y in Config</th>
+        </tr>
+      </thead>
+      <tbody id="resultsBody">
+      </tbody>
+    </table>
   </div>
 
   <script>
+    // Array to store calculation results
+    var calculations = [];
+    var yConfigValues = [];
+    var counter = 0;
+
+    // Function to convert radians to degrees
+    function toDegrees(radians) {
+        return radians * (180 / Math.PI);
+    }
+
     function calculate() {
-      var resultField = document.getElementById('result');
-      var radius = parseFloat(document.getElementById('radius').value);
-      var length = parseFloat(document.getElementById('length').value);
+        var resultField = document.getElementById('result');
+        var radius = parseFloat(document.getElementById('radius').value);
+        var length = parseFloat(document.getElementById('length').value);
+        var actualDegree = parseFloat(document.getElementById('actualDegree').value);
+        var configY = parseFloat(document.getElementById('configY').value);
 
-      if (isNaN(radius) || isNaN(length)) {
-        alert('Please enter valid values for radius and length.');
-        return;
-      }
-      
-      // Calculate the expression
-      var value = 2 * Math.asin(radius / (2 * length));
-      
-      // Convert radians to degrees
-      var degrees = (value * (180 / Math.PI)).toFixed(2);
+        if (isNaN(radius) || isNaN(length) || isNaN(actualDegree) || isNaN(configY)) {
+            alert('Please enter valid values for radius, length, actual degree, and config Y.');
+            return;
+        }
+        
+        // Calculate the expression
+        var value = 2 * Math.asin(length / (2 * radius));
+        
+        // Convert radians to degrees
+        var degrees = toDegrees(value).toFixed(2);
 
-      // Update the result field
-      resultField.value = degrees + ' degrees';
+        // Update the result field
+        resultField.value = degrees + ' degrees';
+
+        // Calculate the required value of Y in the config file
+        var requiredValue = configY / (degrees / actualDegree);
+
+        // Store the calculation result
+        var calculationResult = {
+            radius: radius,
+            length: length,
+            calculatedAngle: degrees,
+            actualDegree: actualDegree,
+            configY: configY,
+            requiredValue: requiredValue.toFixed(2)
+        };
+
+        calculations.push(calculationResult);
+
+        // Update the results table
+        updateTable();
+
+        // Increment counter
+        counter++;
+
+        // Check if we have 10 values for Y.Config
+        if (counter === 10) {
+            calculateAverageYConfig();
+        }
+    }
+
+    // Function to calculate average Y.Config
+    function calculateAverageYConfig() {
+        var sum = 0;
+        yConfigValues.forEach(function(value) {
+            sum += value;
+        });
+        var averageYConfig = sum / yConfigValues.length;
+        alert('Average Value of Y.Config for closest actual degree: ' + averageYConfig.toFixed(2));
+    }
+
+    // Function to update the results table
+    function updateTable() {
+        var tableBody = document.getElementById('resultsBody');
+        // Clear the table
+        tableBody.innerHTML = '';
+
+        // Loop through the calculations array and update the table
+        calculations.forEach(function(calculation) {
+            var newRow = tableBody.insertRow(-1);
+            var cell1 = newRow.insertCell(0);
+            var cell2 = newRow.insertCell(1);
+            var cell3 = newRow.insertCell(2);
+            var cell4 = newRow.insertCell(3);
+            var cell5 = newRow.insertCell(4);
+            var cell6 = newRow.insertCell(5);
+            cell1.textContent = calculation.radius;
+            cell2.textContent = calculation.length;
+            cell3.textContent = calculation.calculatedAngle;
+            cell4.textContent = calculation.actualDegree;
+            cell5.textContent = calculation.configY;
+            cell6.textContent = calculation.requiredValue;
+
+            // Push the required value of Y.Config to the array
+            yConfigValues.push(parseFloat(calculation.requiredValue));
+        });
     }
   </script>
 </body>
