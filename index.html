@@ -8,13 +8,11 @@
     body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 20px;
     }
     .calculator {
-      width: 500px;
+      max-width: 500px;
+      margin: 0 auto;
       background-color: #fff;
       border-radius: 10px;
       padding: 20px;
@@ -59,6 +57,11 @@
       padding: 8px;
       text-align: center;
     }
+    @media only screen and (max-width: 600px) {
+      .calculator {
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -79,6 +82,8 @@
     <input type="number" id="configY" placeholder="Enter value of Y in config file">
 
     <input type="button" value="Calculate Required Value" onclick="calculate()">
+
+    <p>Number of values calculated: <span id="calculationCount">0</span></p>
   </div>
 
   <div>
@@ -152,10 +157,8 @@
         // Increment counter
         counter++;
 
-        // Check if we have 10 values for Y.Config
-        if (counter === 10) {
-            calculateAverageYConfig();
-        }
+        // Update calculation count display
+        document.getElementById('calculationCount').textContent = counter;
     }
 
     // Function to calculate average Y.Config
